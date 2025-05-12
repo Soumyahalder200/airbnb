@@ -1,0 +1,94 @@
+<% layout('layouts/boilerplate.ejs') %>
+<body>
+  <div class="listdiv row mt-3">
+    <div class="col-6 offset-3">
+      <h1><%= showlist.title %></h1>
+      <img
+        class="card-img-top show-img"
+        src="<%= showlist.image %>"
+        alt="Image show here"
+      />
+      <div class="card-body ownerdiv">
+
+        Owned by
+        <i class="card-text">
+          <%= showlist.owner.username %>
+        </i>
+      </div>
+      <div class="descriptiondiv">
+        <p><%= showlist.description %></p>
+      </div>
+      <div class="pricediv">
+        <p>&#8377; <%= showlist.price.toLocaleString("en-IN") %></p>
+      </div>
+      <div class="locationdiv">
+        <p><%= showlist.location %></p>
+      </div>
+      <div class="countrydiv">
+        <p><%= showlist.country %></p>
+      </div>
+      <% if(currUser && currUser._id.equals(showlist.owner._id)){ %>
+      <form action="/listing/<%= showlist._id %>/edit" method="get">
+        <button class="form-btn" type="submit">Edit</button>
+      </form>
+      <form action="/listing/<%= showlist._id %>?_method=DELETE" method="post">
+        <button class="form-btn" type="submit">Delete</button>
+      </form>
+     <% } %>
+    </div>
+    <hr />
+    <div class="col-6 offset-3">
+      <% if(currUser){ %>
+      <h4>Leave a Review</h4>
+      <form
+        action="/listing/<%= showlist._id %>/reviews"
+        method="post"
+        novalidate
+        class="needs-validation"
+      >
+        <div class="mb-3 mt-3">
+          <label for="rating" class="form-label">Rating</label>
+          <input
+            type="range"
+            class="form-range"
+            name="review[rating]"
+            id="rating"
+            max="5"
+            min="1"
+          />
+        </div>
+        <div class="mb-3 mt-3">
+          <label for="comment" class="form-label">Comments</label>
+          <textarea
+            name="review[comment]"
+            id="comment"
+            cols="30"
+            rows="4"
+            class="form-control"
+            required
+          ></textarea>
+          <div class="invalid-feedback">
+            Please add some comments for Review
+          </div>
+        </div>
+        <button type="submit" class="btn btn-outline-dark">submit</button>
+      </form>
+      <% } %>
+      <h4><b>All Reviews</b></h4>
+      <div class="row">
+        <% for(review of showlist.reviews){ %>
+        <div class="card col-5 ms-4 mb-3">
+          <div class="card-bod">
+            <h5 class="card-title">@<%= review.author.username %></h5>
+            <p class="card-text"><%= review.rating %> stars</p>
+            <p class="card-text"><%= review.comment %></p>
+            <form action="/listing/<%= showlist._id %>/reviews/<%= review._id %>?_method=delete" method="post" class="mb-3">
+              <button class="btn btn-dark btn-sm">Delete</button>
+            </form>
+          </div>
+        </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</body>
